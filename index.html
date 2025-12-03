@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>我的行程本｜Sydney Diary V2.2</title>
+  <title>我的行程本｜Sydney Diary V2.3</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -101,10 +101,10 @@
 
     .time-weather-row {
       display: flex;
-      flex-wrap: nowrap;       /* 不換行 */
+      flex-wrap: nowrap;
       gap: 8px;
       align-items: center;
-      overflow-x: auto;        /* 螢幕太小可左右滑 */
+      overflow-x: auto;
     }
 
     .time-block,
@@ -232,7 +232,7 @@
       border-radius: 999px;
       cursor: pointer;
       display: flex;
-      justify-content: flex-start;   /* 不再兩邊拉開 */
+      justify-content: flex-start;
       align-items: center;
       color: var(--text-body);
       gap: 6px;
@@ -244,7 +244,7 @@
       color: #fff;
     }
 
-    /* FX card */
+    /* Cards (FX / Theme) */
     .card {
       background: var(--bg-color);
       border-radius: 12px;
@@ -252,6 +252,7 @@
       font-size: 11px;
     }
 
+    /* FX card */
     .fx-main-line {
       display: flex;
       align-items: center;
@@ -310,6 +311,7 @@
       align-items: center;
       gap: 6px;
       margin-bottom: 6px;
+      position: relative;
     }
 
     .theme-row label {
@@ -317,12 +319,22 @@
       font-size: 11px;
     }
 
-    .theme-row input[type="color"] {
-      border: none;
-      background: transparent;
-      width: 36px;
-      height: 24px;
-      padding: 0;
+    .theme-preview {
+      flex: 1;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--primary-color);
+      border: 1px solid #e5e7eb;
+    }
+
+    .theme-color-input {
+      position: absolute;
+      top: 0;
+      left: 40px; /* 跟 label 對齊右側 */
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+      cursor: pointer;
     }
 
     .theme-row input[type="range"] {
@@ -363,6 +375,7 @@
       border-radius: 12px;
       padding: 14px 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      min-height: 110px;
     }
 
     .day-banner {
@@ -537,7 +550,7 @@
       padding: 2px 6px;
       border-radius: 999px;
       background: #e5e7eb;
-      color: var(--text-muted);
+      color: #6b7280;
     }
 
     .meal-tag-reserve {
@@ -583,7 +596,7 @@
         </button>
         <div class="top-bar-main">
           <div class="app-title">我的行程本｜Sydney Diary</div>
-          <div class="subtitle">V2.2 UI｜單檔版｜已自動載入行程，不需輸入密碼</div>
+          <div class="subtitle">V2.3｜單檔版｜已自動載入行程，不需輸入密碼</div>
           <div class="time-weather-row">
             <div class="time-block">
               <div class="icon-circle icon-clock"></div>
@@ -646,7 +659,9 @@
             <label for="fx-twd">TWD</label>
             <input type="number" id="fx-twd" step="1">
           </div>
-          <div class="fx-tagline">匯率由網路更新，僅供參考。輸入任一欄，另一邊會自動幫你算。</div>
+          <div class="fx-tagline" id="fx-tagline">
+            匯率由網路更新，僅供參考。輸入任一欄，另一邊會自動幫你算。
+          </div>
         </div>
 
         <div class="card">
@@ -655,7 +670,8 @@
           </div>
           <div class="theme-row">
             <label for="theme-color">主色</label>
-            <input type="color" id="theme-color">
+            <div class="theme-preview" id="theme-preview"></div>
+            <input type="color" id="theme-color" class="theme-color-input">
           </div>
           <div class="theme-row">
             <label>R</label>
@@ -687,7 +703,7 @@
   </div>
 
   <script>
-    // ========= 顏色與主題 =========
+    /* ========= 顏色與主題 ========= */
     function rgbToHex(r,g,b){
       function h(x){var s=x.toString(16);return s.length===1?"0"+s:s;}
       return "#"+h(r)+h(g)+h(b);
@@ -722,11 +738,16 @@
       root.style.setProperty("--text-body", "#374151");
       root.style.setProperty("--text-muted", "#6b7280");
 
-      document.getElementById("theme-color").value = theme.hex;
-      document.getElementById("r-range").value = theme.r;
-      document.getElementById("g-range").value = theme.g;
-      document.getElementById("b-range").value = theme.b;
+      var colorInput = document.getElementById("theme-color");
+      var rRange = document.getElementById("r-range");
+      var gRange = document.getElementById("g-range");
+      var bRange = document.getElementById("b-range");
       var hexInput = document.getElementById("theme-hex");
+
+      if(colorInput) colorInput.value = theme.hex;
+      if(rRange) rRange.value = theme.r;
+      if(gRange) gRange.value = theme.g;
+      if(bRange) bRange.value = theme.b;
       if(hexInput) hexInput.value = theme.hex.toUpperCase();
     }
 
@@ -767,14 +788,17 @@
       var b  = document.getElementById("b-range");
       var reset = document.getElementById("reset-theme-btn");
 
-      tc.addEventListener("input", function(e){
-        var hex = e.target.value;
-        var rgb = hexToRgb(hex);
-        var theme = computeThemeFromRGB(rgb.r,rgb.g,rgb.b);
-        applyTheme(theme);
-      });
+      if(tc){
+        tc.addEventListener("input", function(e){
+          var hex = e.target.value;
+          var rgb = hexToRgb(hex);
+          var theme = computeThemeFromRGB(rgb.r,rgb.g,rgb.b);
+          applyTheme(theme);
+        });
+      }
 
       [r,g,b].forEach(function(range){
+        if(!range) return;
         range.addEventListener("input",function(){
           var rr = parseInt(r.value||"17",10);
           var gg = parseInt(g.value||"24",10);
@@ -784,13 +808,15 @@
         });
       });
 
-      reset.addEventListener("click",function(){
-        var t = defaultTheme();
-        applyTheme(t);
-      });
+      if(reset){
+        reset.addEventListener("click",function(){
+          var t = defaultTheme();
+          applyTheme(t);
+        });
+      }
     }
 
-    // ========= 時間列 =========
+    /* ========= 時間列 ========= */
     function updateTimes(){
       try {
         var now = new Date();
@@ -808,7 +834,7 @@
       }
     }
 
-    // ========= 雪梨即時天氣（Open-Meteo） =========
+    /* ========= 雪梨即時天氣（Open-Meteo） ========= */
     function fetchSydneyWeather(){
       var weatherMain = document.getElementById("weather-main");
       var url = "https://api.open-meteo.com/v1/forecast?latitude=-33.8688&longitude=151.2093&current_weather=true";
@@ -840,31 +866,53 @@
         });
     }
 
-    // ========= 匯率換算（自動更新） =========
-    var fxRate = 20.00; // 預設
+    /* ========= 匯率換算（自動更新＋失敗 fallback） ========= */
+    var fxRate = 20.00; // 預設先當 20
 
-    function updateFxLabel(){
+    function updateFxLabel(normal){
       var label = document.getElementById("fx-label");
       if(!label) return;
-      label.textContent = "1 AUD ≈ " + fxRate.toFixed(2) + " TWD";
+      if(normal){
+        label.textContent = "1 AUD ≈ " + fxRate.toFixed(2) + " TWD";
+      }else{
+        label.textContent = "1 AUD ≈ " + fxRate.toFixed(2) + " TWD（更新失敗，暫用 20 計算）";
+      }
     }
 
     function fetchFxRate(){
       var label = document.getElementById("fx-label");
+      var tagline = document.getElementById("fx-tagline");
       if(label) label.textContent = "匯率更新中…";
+
       fetch("https://api.exchangerate.host/latest?base=AUD&symbols=TWD")
         .then(function(res){ return res.json(); })
         .then(function(data){
           if(data && data.rates && data.rates.TWD){
             fxRate = data.rates.TWD;
             localStorage.setItem("sydDiaryFxRate", fxRate.toString());
-            updateFxLabel();
+            updateFxLabel(true);
+            if(tagline){
+              tagline.textContent = "匯率已更新自網路，僅供參考。輸入任一欄，另一邊會自動幫你算。";
+            }
           } else {
-            if(label) label.textContent = "匯率更新失敗，稍後再試";
+            // 更新失敗：維持原本或改成 20
+            if(isNaN(fxRate) || fxRate <= 0){
+              fxRate = 20.0;
+            }
+            updateFxLabel(false);
+            if(tagline){
+              tagline.textContent = "匯率更新失敗，暫以 20.00 計算。仍可輸入金額換算。";
+            }
           }
         })
         .catch(function(){
-          if(label) label.textContent = "匯率更新失敗，稍後再試";
+          if(isNaN(fxRate) || fxRate <= 0){
+            fxRate = 20.0;
+          }
+          updateFxLabel(false);
+          if(tagline){
+            tagline.textContent = "匯率更新失敗，暫以 20.00 計算。仍可輸入金額換算。";
+          }
         });
     }
 
@@ -872,14 +920,20 @@
       var audInput = document.getElementById("fx-aud");
       var twdInput = document.getElementById("fx-twd");
       var refreshBtn = document.getElementById("fx-refresh");
+      var tagline = document.getElementById("fx-tagline");
 
       // 從 localStorage 讀取舊匯率
       var saved = localStorage.getItem("sydDiaryFxRate");
       if(saved){
         var r = parseFloat(saved);
-        if(!isNaN(r)) fxRate = r;
+        if(!isNaN(r) && r > 0){
+          fxRate = r;
+        }
       }
-      updateFxLabel();
+      updateFxLabel(true);
+      if(tagline){
+        tagline.textContent = "匯率由網路更新，僅供參考。輸入任一欄，另一邊會自動幫你算。";
+      }
 
       function audChanged(){
         var aud = parseFloat(audInput.value || "0");
@@ -905,11 +959,11 @@
         fetchFxRate();
       });
 
-      // 初始化時嘗試更新一次
+      // 一進頁面先嘗試更新一次
       fetchFxRate();
     }
 
-    // ========= 行程資料 =========
+    /* ========= 行程資料 ========= */
     var trip = {
       name: "雪梨跨年 10 日遊",
       dateRange: "2025/12/23 – 2026/01/02",
@@ -925,7 +979,6 @@
           stayMap:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport",
           highCal:false,
           walk:3000,
-          weatherUrl:"https://www.google.com/search?q=taoyuan+airport+weather+2025-12-23",
           schedule:[
             {time:"20:30–22:30", title:"前往桃園機場・辦理登機", detail:"抵達機場辦理報到、托運行李，通關後準備登機。", map:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport"},
             {time:"23:50", title:"23:50 TPE → SYD", detail:"上機後盡量睡覺，調整時差。", map:""}
@@ -947,7 +1000,6 @@
           stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
           highCal:false,
           walk:8000,
-          weatherUrl:"https://www.google.com/search?q=sydney+weather+2025-12-24",
           schedule:[
             {time:"12:15–13:30", title:"抵達雪梨機場 SYD", detail:"下機後通關、領行李、過檢疫。", map:"https://www.google.com/maps/place/Sydney+Airport"},
             {time:"13:30–15:00", title:"前往 Citadines Walker North Sydney", detail:"機場搭火車 T8 → Central → 轉 T1/T9 至 North Sydney，步行 5–8 分鐘到飯店。", map:"https://www.google.com/maps/search/North+Sydney+Station"},
@@ -972,7 +1024,6 @@
           stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
           highCal:true,
           walk:12000,
-          weatherUrl:"https://www.google.com/search?q=sydney+weather+2025-12-25",
           schedule:[
             {time:"09:00–12:00", title:"City 文化散步", detail:"從 Wynyard / St James 出站，逛 Hyde Park、St Mary’s Cathedral，沿 Macquarie St 看 Queen’s Square、The Mint、Hyde Park Barracks、Il Porcellino、NSW Parliament、State Library of NSW。", map:"https://www.google.com/maps/place/Hyde+Park+Sydney"},
             {time:"12:30–13:30", title:"午餐：The Rocks 一帶", detail:"推薦 The Fine Food Store（早午餐、咖啡、三明治）。", map:"https://www.google.com/maps/search/The+Fine+Food+Store+The+Rocks"},
@@ -997,7 +1048,6 @@
           stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
           highCal:true,
           walk:11000,
-          weatherUrl:"https://www.google.com/search?q=sydney+weather+2025-12-26",
           schedule:[
             {time:"09:30–14:00", title:"Pitt St Mall & 百貨購物", detail:"搭火車到 Town Hall，逛 Pitt St Mall、Westfield、QVB，趁 Boxing Day 大採購。", map:"https://www.google.com/maps/place/Pitt+Street+Mall"},
             {time:"12:00–13:00", title:"午餐：City", detail:"可選 Mamak（馬來西亞料理）或百貨美食街。", map:"https://www.google.com/maps/search/Mamak+Sydney"},
@@ -1021,7 +1071,6 @@
           stayMap:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central",
           highCal:true,
           walk:9000,
-          weatherUrl:"https://www.google.com/search?q=sydney+weather+2025-12-27",
           schedule:[
             {time:"09:30–10:30", title:"退房 → 搬到 Metro Hotel", detail:"從 Citadines 退房，搭火車或 Uber 前往 Central 附近的 Metro，先寄放行李。", map:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central"},
             {time:"11:00–13:00", title:"Sydney Fish Market 午餐", detail:"吃生蠔、龍蝦、鮭魚握壽司、炸魚薯條。", map:"https://www.google.com/maps/place/Sydney+Fish+Market"},
@@ -1046,7 +1095,6 @@
           stayMap:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central",
           highCal:false,
           walk:13000,
-          weatherUrl:"https://www.google.com/search?q=blue+mountains+weather+2025-12-28",
           schedule:[
             {time:"07:30–09:30", title:"搭火車前往藍山", detail:"Central 搭 Blue Mountains Line 到 Katoomba。", map:"https://www.google.com/maps/place/Central+Station,+Sydney"},
             {time:"10:00–12:30", title:"Scenic World 纜車三寶", detail:"Skyway、Railway、Cableway，俯瞰山谷。", map:"https://www.google.com/maps/place/Scenic+World+Katoomba"},
@@ -1071,7 +1119,6 @@
           stayMap:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central",
           highCal:true,
           walk:8000,
-          weatherUrl:"https://www.google.com/search?q=hunter+valley+weather+2025-12-29",
           schedule:[
             {time:"08:00–08:15", title:"走路至 St Laurence Church 集合", detail:"從飯店步行約 5 分鐘到 812 George St。", map:"https://www.google.com/maps/place/St+Laurence+Church+Sydney"},
             {time:"08:20–17:30", title:"獵人谷一日遊行程", detail:"造訪 3–4 間酒莊，品酒、起司盤、巧克力店。", map:"https://www.google.com/maps/search/Hunter+Valley+Wineries"},
@@ -1095,7 +1142,6 @@
           stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
           highCal:false,
           walk:11000,
-          weatherUrl:"https://www.google.com/search?q=sydney+weather+2025-12-30",
           schedule:[
             {time:"08:30–09:30", title:"退房 → 行李帶去 Rydges 寄放", detail:"從 Metro 搬到 Rydges，不能入住就先寄放行李。", map:"https://www.google.com/maps/search/Rydges+Australia+Square"},
             {time:"09:30–13:00", title:"Taronga Zoo 動物園", detail:"從 Circular Quay 搭渡輪到動物園，看無尾熊、袋鼠等。", map:"https://www.google.com/maps/place/Taronga+Zoo+Sydney"},
@@ -1120,7 +1166,6 @@
           stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
           highCal:true,
           walk:9000,
-          weatherUrl:"https://www.google.com/search?q=sydney+weather+2025-12-31",
           schedule:[
             {time:"10:30–14:00", title:"Barangaroo & Millers Point 散步", detail:"走 Barangaroo Reserve、Millers Point、Observatory Hill 看大橋。", map:"https://www.google.com/maps/place/Barangaroo+Reserve"},
             {time:"12:30–13:30", title:"午餐", detail:"在 Barangaroo 或 City 餐廳用餐。", map:""},
@@ -1147,7 +1192,6 @@
           stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
           highCal:false,
           walk:8000,
-          weatherUrl:"https://www.google.com/search?q=sydney+weather+2026-01-01",
           schedule:[
             {time:"09:30–11:00", title:"睡到自然醒・早餐", detail:"在飯店附近輕鬆吃早餐。", map:""},
             {time:"11:00–11:30", title:"退房・寄放行李", detail:"11:00 前退房並寄放行李。", map:""},
@@ -1173,7 +1217,6 @@
           stayMap:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport",
           highCal:false,
           walk:4000,
-          weatherUrl:"https://www.google.com/search?q=taoyuan+weather+2026-01-02",
           schedule:[
             {time:"05:50–08:00", title:"抵達桃園機場・入境", detail:"領行李、通關、搭車回家。", map:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport"},
             {time:"08:00 之後", title:"回家整理行李・好好休息", detail:"洗澡、洗衣服、整理戰利品。", map:""}
@@ -1187,7 +1230,7 @@
       ]
     };
 
-    // ========= 渲染 =========
+    /* ========= 渲染 ========= */
     var dayListEl   = document.getElementById("day-list");
     var dayHeaderEl = document.getElementById("day-header");
     var dayScheduleEl = document.getElementById("day-schedule");
@@ -1201,11 +1244,14 @@
         var li = document.createElement("li");
         li.className = "day-list-item" + (i===0 ? " active" : "");
         li.setAttribute("data-index", i);
+
+        // 👉 新版：不再加括弧，而是用「｜」串起來
         var text = d.label;
         if(d.theme){
-          text += "（" + d.theme + "）";
+          text += "｜" + d.theme;
         }
         li.textContent = text;
+
         li.addEventListener("click", function(){
           var idx = parseInt(this.getAttribute("data-index"),10);
           currentDayIndex = idx;
@@ -1300,7 +1346,7 @@
       dayMealsEl.appendChild(wrap);
     }
 
-    // ========= 側邊欄收合 =========
+    /* ========= 側邊欄收合 ========= */
     function initSidebarToggle(){
       var toggle = document.getElementById("sidebar-toggle");
       var sidebar = document.getElementById("sidebar");
@@ -1325,7 +1371,7 @@
       overlay.addEventListener("click", closeSidebar);
     }
 
-    // ========= INIT =========
+    /* ========= INIT ========= */
     initThemeUI();
     initFx();
     initDayList();
@@ -1333,7 +1379,7 @@
     updateTimes();
     setInterval(updateTimes, 1000);
     fetchSydneyWeather();
-    setInterval(fetchSydneyWeather, 10*60*1000); // 每 10 分鐘更新一次
+    setInterval(fetchSydneyWeather, 10*60*1000);
     initSidebarToggle();
   </script>
 </body>
