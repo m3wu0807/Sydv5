@@ -101,12 +101,14 @@
 
     .time-weather-row {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;        /* 不換行 */
       gap: 8px;
       align-items: center;
+      overflow-x: auto;         /* 太小螢幕可以橫向捲動 */
     }
 
-    .time-block, .weather-block {
+    .time-block,
+    .weather-block {
       background: var(--card-bg);
       border-radius: 999px;
       padding: 6px 10px;
@@ -116,6 +118,7 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.04);
       font-size: 11px;
       color: var(--text-subtitle);
+      flex-shrink: 0;          /* 不被擠壓變小 */
     }
 
     .time-label {
@@ -178,7 +181,7 @@
       width: 260px;
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 14px 12px;
+      padding: 14px 12px 28px;   /* 底部多一點空間 */
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
@@ -264,7 +267,7 @@
     }
 
     .fx-row label {
-      min-width: 60px;
+      min-width: 44px;
     }
 
     .fx-row input[type="number"] {
@@ -304,6 +307,15 @@
 
     .theme-row input[type="range"] {
       flex: 1;
+    }
+
+    .theme-row input[type="text"] {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      padding: 4px 6px;
+      font-size: 11px;
+      background: #f9fafb;
     }
 
     .small-button {
@@ -373,7 +385,7 @@
       position: absolute;
       width: 9px;
       height: 9px;
-      border-radius: 50% 50% 50% 50%;
+      border-radius: 50%;
       background: var(--accent-color);
       top: 0px;
       left: 2.5px;
@@ -388,13 +400,6 @@
       background: #ffffff;
       top: 2.5px;
       left: 5px;
-    }
-
-    .banner-weather-box {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
     }
 
     .day-title {
@@ -610,9 +615,9 @@
             <span class="icon-dot"></span><span>💱 匯率換算</span>
           </div>
           <div class="fx-row">
-            <label for="fx-rate">1 AUD =</label>
+            <label for="fx-rate">匯率</label>
             <input type="number" id="fx-rate" step="0.01" value="20">
-            <span>TWD</span>
+            <span>TWD / 1 AUD</span>
           </div>
           <div class="fx-row">
             <label for="fx-aud">AUD</label>
@@ -644,6 +649,10 @@
           <div class="theme-row">
             <label>B</label>
             <input type="range" id="b-range" min="0" max="255">
+          </div>
+          <div class="theme-row">
+            <label>色碼</label>
+            <input type="text" id="theme-hex" readonly>
           </div>
           <button id="reset-theme-btn" class="small-button">恢復預設</button>
         </div>
@@ -698,6 +707,8 @@
       document.getElementById("r-range").value = theme.r;
       document.getElementById("g-range").value = theme.g;
       document.getElementById("b-range").value = theme.b;
+      var hexInput = document.getElementById("theme-hex");
+      if(hexInput) hexInput.value = theme.hex.toUpperCase();
     }
 
     function defaultTheme(){
@@ -781,7 +792,6 @@
     // ========= 雪梨即時天氣（Open-Meteo） =========
     function fetchSydneyWeather(){
       var weatherMain = document.getElementById("weather-main");
-      // 雪梨座標：-33.8688, 151.2093
       var url = "https://api.open-meteo.com/v1/forecast?latitude=-33.8688&longitude=151.2093&current_weather=true";
       fetch(url)
         .then(function(res){ return res.json(); })
@@ -803,10 +813,11 @@
           else if(code >= 80 && code <= 82) iconChar = "🌧";
           else if(code >= 95) iconChar = "⛈";
 
-          weatherMain.textContent = iconChar + " " + temp.toFixed(1) + "°C｜風 " + wind.toFixed(0) + " km/h";
+          weatherMain.textContent =
+            iconChar + " " + temp.toFixed(1) + "°C｜風 " + wind.toFixed(0) + " km/h";
         })
         .catch(function(){
-          weatherMain.textContent = "載入失敗，可點開 Google 搜尋天氣";
+          weatherMain.textContent = "載入失敗，可點 Google 搜尋天氣";
         });
     }
 
@@ -852,7 +863,10 @@
 
       var saved = localStorage.getItem("sydDiaryFxRate");
       if(saved){
-        rateInput.value = saved;
+        var r = parseFloat(saved);
+        if(!isNaN(r)) rateInput.value = r.toFixed(2);
+      } else {
+        rateInput.value = parseFloat(rateInput.value).toFixed(2);
       }
     }
 
@@ -1169,9 +1183,6 @@
         bannerHTML +=     '<span class="icon-map"></span><span>地圖</span>';
         bannerHTML +=   '</a>';
       }
-      bannerHTML +=   '</div>';
-      bannerHTML +=   '<div class="banner-weather-box">';
-      bannerHTML +=     '<span style="font-size:11px;color:var(--text-muted);">當日天氣請點上方「雪梨天氣」或 Google 頁面查看</span>';
       bannerHTML +=   '</div>';
       bannerHTML += '</div>';
 
