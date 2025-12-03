@@ -226,18 +226,18 @@
       padding: 0;
     }
 
-    .day-list-item {
-      font-size: 12px;
-      padding: 6px 8px;
-      border-radius: 999px;
-      cursor: pointer;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      color: var(--text-body);
-      gap: 6px;
-      white-space: nowrap;
-    }
+.day-list-item {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 82px 60px 1fr; /* 左：Day / 中：日期 / 右：主題 */
+  align-items: center;
+  color: var(--text-body);
+  column-gap: 6px;
+  white-space: nowrap;
+}
 
     .day-list-item.active {
       background: var(--primary-color);
@@ -369,14 +369,16 @@
     }
 
     #day-header,
-    #day-schedule,
-    #day-meals {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 14px 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      min-height: 110px;
-    }
+#day-schedule,
+#day-meals {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  min-height: 110px;
+  width: 100%;          /* ✅ 一律佔滿內容寬度 */
+  box-sizing: border-box;
+}
 
     .day-banner {
       display: flex;
@@ -1246,11 +1248,17 @@
         li.setAttribute("data-index", i);
 
         // 👉 新版：不再加括弧，而是用「｜」串起來
-        var text = d.label;
-        if(d.theme){
-          text += "｜" + d.theme;
-        }
-        li.textContent = text;
+        var textLeft = d.label;        // 出發日｜12/23 或 Day 1｜12/24
+var parts = textLeft.split("｜");
+var col1 = parts[0] || "";
+var col2 = parts[1] || "";
+var col3 = d.theme || "";
+
+// 用三個 span 塞到三欄
+li.innerHTML =
+  '<span>'+ col1 +'</span>' +
+  '<span>'+ col2 +'</span>' +
+  '<span>'+ col3 +'</span>';
 
         li.addEventListener("click", function(){
           var idx = parseInt(this.getAttribute("data-index"),10);
