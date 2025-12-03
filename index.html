@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>我的行程本｜Sydney Diary</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>我的行程本｜Sydney Diary</h1>
+      <p class="subtitle">已自動載入行程，不需輸入密碼</p>
+    </header>
+
+    <main>
+      <section id="app-section">
+        <div class="top-controls">
+          <div class="theme-panel">
+            <div class="theme-title">🎨 網站色系</div>
+            <div class="theme-row">
+              <label for="theme-color">主色</label>
+              <input type="color" id="theme-color" />
+            </div>
+            <div class="theme-row">
+              <span>RGB</span>
+              <input type="range" id="r-range" min="0" max="255" />
+              <input type="range" id="g-range" min="0" max="255" />
+              <input type="range" id="b-range" min="0" max="255" />
+            </div>
+            <button id="reset-theme-btn" class="small-button">恢復預設</button>
+          </div>
+        </div>
+
+        <div class="layout">
+          <aside class="sidebar">
+            <h2>旅程列表</h2>
+            <ul id="trip-list"></ul>
+          </aside>
+          <section class="content">
+            <div id="day-tabs" class="day-tabs"></div>
+            <div id="day-header"></div>
+            <div id="day-schedule"></div>
+            <div id="day-meals"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
