@@ -227,16 +227,32 @@
     }
 
 .day-list-item {
-  font-size: 12px;
-  padding: 6px 10px;
+  font-size: 11px;              /* 字稍微小一點 */
+  padding: 4px 8px;             /* 卡片本身窄一點 */
   border-radius: 999px;
   cursor: pointer;
-  display: grid;
-  grid-template-columns: 82px 60px 1fr; /* 左：Day / 中：日期 / 右：主題 */
+  display: flex;
   align-items: center;
   color: var(--text-body);
-  column-gap: 6px;
+  column-gap: 4px;
   white-space: nowrap;
+}
+
+.day-list-item .day-col1 {
+  width: 56px;                  /* 出發日 / Day 1 */
+  flex-shrink: 0;
+}
+
+.day-list-item .day-col2 {
+  width: 48px;                  /* 12/23, 12/24... */
+  flex-shrink: 0;
+}
+
+.day-list-item .day-col3 {
+  flex: 1;                      /* 主題文字 */
+  min-width: 0;
+  overflow: hidden;             /* 太長就 … */
+  text-overflow: ellipsis;
 }
 
     .day-list-item.active {
@@ -378,6 +394,10 @@
   min-height: 110px;
   width: 100%;          /* ✅ 一律佔滿內容寬度 */
   box-sizing: border-box;
+}
+    /* 讓三張白底卡真的貼齊內容區，不要縮進去 */
+.content > section {
+  width: 100%;
 }
 
     .day-banner {
