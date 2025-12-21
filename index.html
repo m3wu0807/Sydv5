@@ -693,7 +693,7 @@
         </button>
         <div class="top-bar-main">
           <div class="app-title">家碩&雨恬｜Sydney Diary</div>
-          <div class="subtitle">V3.67｜單檔版｜可自行切換日期頁面載入行程</div>
+          <div class="subtitle">V3.7｜單檔版｜可自行切換日期頁面載入行程</div>
           <div class="time-weather-row">
             <div class="time-block">
               <div class="icon-circle icon-clock"></div>
@@ -1142,8 +1142,8 @@ var trip = {
         {time:"12:15–13:30", title:"抵達雪梨機場 SYD", detail:"通關、領行李、檢疫。", map:"Sydney Airport"},
         {time:"13:30–15:00", title:"前往 North Sydney（寄放／入住）", detail:"Airport Link → Central 轉乘 → North Sydney，步行到飯店。", map:"https://www.google.com/maps/search/North+Sydney+Station"},
         {time:"15:20–16:30", title:"Lavender Bay", detail:"港灣散步拍照、放鬆。", map:"https://www.google.com/maps/place/Lavender+Bay"},
-        {time:"16:45–17:45", title:"Luna Park 月神公園", detail:"拍照走走，不必玩設施也很有氣氛。", map:"https://www.google.com/maps/place/Luna+Park+Sydney"},
-        {time:"19:00–21:00", title:"聖誕夜晚餐：Anita Dining（已訂）", detail:"建議提早 10–15 分鐘到。", map:""}
+        {time:"16:45–17:45", title:"Luna Park 月神公園", detail:"拍照走走，不必玩設施也很有氣氛。", map:"Luna Park +Sydney"},
+        {time:"18:30–21:00", title:"聖誕夜晚餐：Antica Dining（已訂18:30）", detail:"建議提早 10–15 分鐘到。", map:"Antica Dining"}
       ],
       meals:{
         breakfast:null,
@@ -1164,9 +1164,9 @@ var trip = {
       highCal:false,
       walk:11000,
       schedule:[
-        {time:"09:30–11:30", title:"Hyde Park・St Mary’s Cathedral", detail:"聖誕節很多店休，走古蹟線最適合。", map:"https://www.google.com/maps/place/St+Mary%27s+Cathedral+Sydney"},
+        {time:"09:30–11:30", title:"Hyde Park・St Mary’s Cathedral", detail:"聖誕節很多店休，走古蹟線最適合。", map:"Hyde Park"},
         {time:"12:00–13:00", title:"市區簡單午餐", detail:"聖誕節營業時間短，看到開的就先吃。", map:""},
-        {time:"13:30–16:30", title:"Royal Botanic Gardens・Mrs Macquarie’s Chair", detail:"港灣經典拍照點。", map:"https://www.google.com/maps/place/Mrs+Macquarie%27s+Chair"},
+        {time:"13:30–16:30", title:"Royal Botanic Gardens・Mrs Macquarie’s Chair", detail:"港灣經典拍照點。", map:"Royal Botanic Gardens"},
         {time:"17:00–18:30", title:"The Rocks 聖誕市集／市區散步", detail:"有開就逛，沒有就當夜景散步。", map:"https://www.google.com/maps/place/The+Rocks+Sydney"},
         {time:"19:30", title:"早點休息", detail:"隔天開始正常節奏。", map:""}
       ],
@@ -1191,9 +1191,9 @@ var trip = {
       schedule:[
         {time:"09:30–11:30", title:"Surry Hills 散步", detail:"咖啡店、設計小店、街區氛圍。", map:"https://www.google.com/maps/place/Surry+Hills"},
         {time:"12:00–13:00", title:"Surry Hills 午餐", detail:"找評分高的 Brunch 店。", map:""},
-        {time:"13:30–15:30", title:"QVB・Town Hall 周邊", detail:"經典建築＋市中心逛街。", map:"https://www.google.com/maps/place/Queen+Victoria+Building"},
-        {time:"16:30–18:00", title:"Sydney Tower Eye（傍晚）", detail:"傍晚視野最好。", map:"https://www.google.com/maps/place/Sydney+Tower+Eye"},
-        {time:"19:00", title:"晚餐：市區／Chinatown", detail:"晚餐自由選，吃完回 North Sydney。", map:"https://www.google.com/maps/place/Chinatown+Sydney"}
+        {time:"13:30–15:30", title:"QVB・Town Hall 周邊", detail:"經典建築＋市中心逛街。", map:"Queen Victoria Building"},
+        {time:"16:30–18:00", title:"Sydney Tower Eye（傍晚）", detail:"傍晚視野最好。", map:"Sydney Tower Eye"},
+        {time:"19:00", title:"晚餐：市區／Chinatown", detail:"晚餐自由選，吃完回 North Sydney。", map:"Chinatown Sydney"}
       ],
       meals:{
         breakfast:{name:"咖啡＋輕食", type:"輕食", note:"", reserve:false},
@@ -1215,10 +1215,10 @@ var trip = {
       walk:9000,
       schedule:[
         {time:"09:30–10:30", title:"退房 → 搬到 Coronation（寄放/入住）", detail:"先到 CBD 放行李，輕裝出發。", map:"https://www.google.com/maps/search/Hotel+Coronation+Sydney"},
-        {time:"11:30–13:00", title:"Sydney Fish Market 午餐", detail:"海鮮拼盤、生蠔、炸魚薯條。", map:"https://www.google.com/maps/place/Sydney+Fish+Market"},
-        {time:"13:30–16:30", title:"Darling Harbour 散步", detail:"港邊慢走＋拍照。", map:"https://www.google.com/maps/place/Darling+Harbour"},
-        {time:"16:30–17:40", title:"SEA LIFE Sydney Aquarium（水族館）", detail:"晚餐前剛剛好。", map:"https://www.google.com/maps/place/SEA+LIFE+Sydney+Aquarium"},
-        {time:"18:10–21:00", title:"雪梨港晚餐遊船（已訂）", detail:"依票券指示登船；建議提早到碼頭。", map:"https://www.google.com/maps/search/King+Street+Wharf"},
+        {time:"11:30–13:00", title:"Sydney Fish Market 午餐", detail:"海鮮拼盤、生蠔、炸魚薯條。", map:"Sydney Fish Market"},
+        {time:"13:30–16:30", title:"Darling Harbour 散步", detail:"港邊慢走＋拍照。", map:"Darling Harbour"},
+        {time:"16:30–17:40", title:"SEA LIFE Sydney Aquarium（水族館）", detail:"晚餐前剛剛好。", map:"SEA LIFE Sydney Aquarium"},
+        {time:"18:10–21:00", title:"雪梨港晚餐遊船（已訂）", detail:"依票券指示登船；建議提早到碼頭。地點:國王街8號碼頭", map:"https://www.google.com/maps/search/King+Street+Wharf"},
         {time:"21:20", title:"回飯店休息", detail:"散場後回 CBD 飯店。", map:""}
       ],
       meals:{
@@ -1240,10 +1240,10 @@ var trip = {
       highCal:false,
       walk:13000,
       schedule:[
-        {time:"07:30–09:30", title:"Central → Katoomba（火車）", detail:"刷 Opal 或買票；早出發更從容。", map:"https://www.google.com/maps/place/Central+Station,+Sydney"},
-        {time:"10:00–12:30", title:"Scenic World", detail:"Skyway / Railway / Cableway（纜車三寶）。", map:"https://www.google.com/maps/place/Scenic+World"},
+        {time:"07:30–09:30", title:"Central → Katoomba（火車）", detail:"刷 Opal 或買票；早出發更從容。", map:"Central Station Sydney"},
+        {time:"10:00–12:30", title:"Scenic World", detail:"Skyway / Railway / Cableway（纜車三寶）。", map:"Scenic World"},
         {time:"12:30–13:30", title:"午餐：Katoomba 小鎮", detail:"隨機挑評分好的店即可。", map:"https://www.google.com/maps/place/Katoomba"},
-        {time:"13:45–16:00", title:"Three Sisters・Echo Point", detail:"看三姐妹岩＋附近步道。", map:"https://www.google.com/maps/place/Echo+Point+Lookout"},
+        {time:"13:45–16:00", title:"Three Sisters・Echo Point", detail:"看三姐妹岩＋附近步道。", map:"Echo Point Lookout"},
         {time:"16:30–18:30", title:"返回雪梨市區", detail:"回到 CBD 休息、簡單晚餐。", map:""}
       ],
       meals:{
@@ -1265,7 +1265,7 @@ var trip = {
       highCal:true,
       walk:7000,
       schedule:[
-        {time:"07:50–08:10", title:"前往集合點", detail:"St Laurence Church（812 George St）。", map:"https://www.google.com/maps/place/St+Laurence+Church"},
+        {time:"07:50–08:10", title:"前往集合點", detail:"Shreton Grand Hotel。", map:"161 Elizabeth St. Sydney"},
         {time:"08:20–17:30", title:"獵人谷一日團", detail:"酒莊品酒、起司盤、巧克力店。", map:"https://www.google.com/maps/search/Hunter+Valley"},
         {time:"18:00–19:30", title:"返回市區・晚餐自由", detail:"不建議太晚，回飯店休息。", map:""}
       ],
@@ -1289,8 +1289,8 @@ var trip = {
       walk:11000,
       schedule:[
         {time:"08:30–09:10", title:"退房 Coronation → Rydges 寄放行李", detail:"先把行李移到 Rydges（通常可寄放）。", map:"https://www.google.com/maps/search/Rydges+Australia+Square"},
-        {time:"09:30–13:00", title:"Taronga Zoo", detail:"Circular Quay 搭渡輪 → 入園；看無尾熊、海獅秀。", map:"https://www.google.com/maps/place/Taronga+Zoo+Sydney"},
-        {time:"13:30–15:00", title:"回市區休息", detail:"渡輪回 Circular Quay，找咖啡廳坐一下。", map:"https://www.google.com/maps/place/Circular+Quay"},
+        {time:"09:30–13:00", title:"Taronga Zoo", detail:"Circular Quay 搭渡輪 → 入園；看無尾熊、海獅秀。", map:"Taronga Zoo Sydney"},
+        {time:"13:30–15:00", title:"回市區休息", detail:"渡輪回 Circular Quay，找咖啡廳坐一下。", map:"Circular Quay"},
         {time:"15:30–16:30", title:"辦理入住 Rydges", detail:"Check-in、整理跨年兩天用品。", map:""},
         {time:"晚上", title:"輕鬆晚餐/整理行李", detail:"跨年前一天，保持體力。", map:""}
       ],
@@ -1316,7 +1316,7 @@ var trip = {
         {time:"上午", title:"市區輕鬆活動", detail:"可選：Newtown／書店／咖啡廳（避免耗體力）。", map:"https://www.google.com/maps/place/Newtown"},
         {time:"下午", title:"回飯店休息・換裝", detail:"跨年人潮大，提早整理好。", map:""},
         {time:"傍晚", title:"提早吃點東西", detail:"避免演出後太餓、也避免太晚找不到吃的。", map:""},
-        {time:"19:45–22:00", title:"雪梨歌劇院跨年歌劇（已訂）", detail:"提早到場安檢。", map:"https://www.google.com/maps/place/Sydney+Opera+House"},
+        {time:"19:45–22:00", title:"雪梨歌劇院跨年歌劇（已訂）", detail:"提早到場安檢。", map:"Sydney Opera House"},
         {time:"22:00–00:30", title:"After Party＋跨年煙火", detail:"倒數看港灣煙火。", map:""},
         {time:"00:30–01:10", title:"回飯店", detail:"走路回 Rydges，避開擁擠交通。", map:""}
       ],
