@@ -269,17 +269,21 @@
   color:#fff;
 }
 
-    
-/* ✅ 內容區寬度固定（每一頁三張白卡都一致） */
-.content {
+    .content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: block;      /* ✅ 不用 flex，避免 iOS gap bug */
   z-index: 1;
-  padding-bottom: 20px; /* 最下面也留一點灰底 */
+}
+
+/* ✅ 用 margin 撐出「卡片與卡片之間的灰底距離」 */
+.content > section {
   width: 100%;
-  max-width: 760px;     /* ✅ 固定上限，避免某些頁看起來變窄 */
+  margin-bottom: 16px; /* 你想更鬆就改 18 / 20 */
+}
+
+/* 最後一張卡片下面不要多一段空白 */
+.content > section:last-child {
+  margin-bottom: 0;
 }
 
     /* Cards (FX / Theme) */
