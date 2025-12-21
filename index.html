@@ -693,7 +693,7 @@
         </button>
         <div class="top-bar-main">
           <div class="app-title">家碩&雨恬｜Sydney Diary</div>
-          <div class="subtitle">V3.65｜單檔版｜可自行切換日期頁面載入行程</div>
+          <div class="subtitle">V3.66｜單檔版｜可自行切換日期頁面載入行程</div>
           <div class="time-weather-row">
             <div class="time-block">
               <div class="icon-circle icon-clock"></div>
@@ -985,7 +985,7 @@ function formatDateLabel(dateStr){
       if(normal){
         label.textContent = "1 AUD ≈ " + fxRate.toFixed(2) + " TWD";
       }else{
-        label.textContent = "1 AUD ≈ " + fxRate.toFixed(2) + " TWD（更新失敗，暫用 20 計算）";
+        label.textContent = "1 AUD ≈ " + fxRate.toFixed(2) + " TWD（更新失敗，暫用 20.8 計算）";
       }
     }
 
@@ -1031,7 +1031,7 @@ function fetchFxRate(){
       // 全部失敗：維持原本或 fallback 20
       if(isNaN(fxRate) || fxRate <= 0) fxRate = 20.0;
       updateFxLabel(false);
-      if(tagline) tagline.textContent = "匯率更新失敗，暫以 20.00 計算。仍可輸入金額換算。";
+      if(tagline) tagline.textContent = "匯率更新失敗，暫以 20.80 計算。仍可輸入金額換算。";
       return;
     }
 
@@ -1139,7 +1139,8 @@ var trip = {
       highCal:true,
       walk:9000,
       schedule:[
-        {time:"12:15–13:30", title:"抵達雪梨機場 SYD", detail:"通關、領行李、檢疫。", map:"https://www.google.com/maps/place/Sydney+Airport"},
+        /*{time:"12:15–13:30", title:"抵達雪梨機場 SYD", detail:"通關、領行李、檢疫。", map:"https://www.google.com/maps/place/Sydney+Airport"},*/
+        {time:"12:15–13:30", title:"抵達雪梨機場 SYD", detail:"通關、領行李、檢疫。", map:"Sydney Airport"}
         {time:"13:30–15:00", title:"前往 North Sydney（寄放／入住）", detail:"Airport Link → Central 轉乘 → North Sydney，步行到飯店。", map:"https://www.google.com/maps/search/North+Sydney+Station"},
         {time:"15:20–16:30", title:"Lavender Bay", detail:"港灣散步拍照、放鬆。", map:"https://www.google.com/maps/place/Lavender+Bay"},
         {time:"16:45–17:45", title:"Luna Park 月神公園", detail:"拍照走走，不必玩設施也很有氣氛。", map:"https://www.google.com/maps/place/Luna+Park+Sydney"},
