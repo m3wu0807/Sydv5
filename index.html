@@ -449,6 +449,32 @@
       color: var(--accent-color);
     }
 
+    /* Day 前後切換按鈕 */
+.day-nav {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.nav-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text-subtitle);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+    
     .icon-map {
       width: 14px;
       height: 14px;
@@ -646,7 +672,7 @@
         </button>
         <div class="top-bar-main">
           <div class="app-title">家碩&雨恬｜Sydney Diary</div>
-          <div class="subtitle">V3.2｜單檔版｜可自行切換日期頁面載入行程</div>
+          <div class="subtitle">V3.5｜單檔版｜可自行切換日期頁面載入行程</div>
           <div class="time-weather-row">
             <div class="time-block">
               <div class="icon-circle icon-clock"></div>
@@ -1396,12 +1422,16 @@ li.innerHTML =
       }
       badges += '<span class="badge">🚶 目標 '+ d.walk.toLocaleString() +' 步</span>';
 
-      dayHeaderEl.innerHTML =
-        bannerHTML +
-        '<div class="day-date">📅 ' + formatDateLabel(d.date) + '</div>' +
-        '<div class="day-title">'+ d.title +'</div>' +
-        '<div class="day-subtitle">'+ d.subtitle +'</div>' +
-        '<div class="badge-row">'+ badges +'</div>';
+dayHeaderEl.innerHTML =
+  bannerHTML +
+  '<div class="day-date">📅 ' + formatDateLabel(d.date) + '</div>' +
+  '<div class="day-title">'+ d.title +'</div>' +
+  '<div class="day-subtitle">'+ d.subtitle +'</div>' +
+  '<div class="badge-row">'+ badges +'</div>' +
+  '<div class="day-nav">' +
+    '<button class="nav-btn" id="prev-day">← 前一天</button>' +
+    '<button class="nav-btn" id="next-day">後一天 →</button>' +
+  '</div>';
       
       // Schedule
       dayScheduleEl.innerHTML = '<div class="section-title">📋 行程時間軸</div>';
@@ -1449,6 +1479,32 @@ li.innerHTML =
         wrap.appendChild(card);
       }
       dayMealsEl.appendChild(wrap);
+
+            // 綁定前後一天按鈕
+      var prevBtn = document.getElementById("prev-day");
+      var nextBtn = document.getElementById("next-day");
+
+      if(prevBtn){
+        prevBtn.disabled = (index <= 0);
+        prevBtn.onclick = function(){
+          if(currentDayIndex > 0){
+            currentDayIndex--;
+            updateDayListActive();
+            renderDay(currentDayIndex);
+          }
+        };
+      }
+
+      if(nextBtn){
+        nextBtn.disabled = (index >= trip.days.length - 1);
+        nextBtn.onclick = function(){
+          if(currentDayIndex < trip.days.length - 1){
+            currentDayIndex++;
+            updateDayListActive();
+            renderDay(currentDayIndex);
+          }
+        };
+      }
     }
 
     /* ========= 側邊欄收合 ========= */
@@ -1486,6 +1542,53 @@ li.innerHTML =
     fetchSydneyWeather();
     setInterval(fetchSydneyWeather, 10*60*1000);
     initSidebarToggle();
+    // 左右滑動切換前後一天（避免在側邊欄上觸發）
+(function initSwipeNav(){
+  var startX = 0, startY = 0;
+  var threshold = 60;   // 需要滑動的距離
+  var restraint = 50;   // 垂直偏移容忍
+
+  var target = document.querySelector("main.content") || document.body;
+
+  target.addEventListener("touchstart", function(e){
+    if(!e.touches || e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, {passive:true});
+
+  target.addEventListener("touchend", function(e){
+    if(!e.changedTouches || e.changedTouches.length !== 1) return;
+
+    // 若側邊欄是開的，就不要滑動切換（避免誤觸）
+    var sidebar = document.getElementById("sidebar");
+    if(sidebar && sidebar.classList.contains("open")) return;
+
+    var endX = e.changedTouches[0].clientX;
+    var endY = e.changedTouches[0].clientY;
+
+    var dx = endX - startX;
+    var dy = endY - startY;
+
+    // 主要是水平滑動才算
+    if(Math.abs(dx) >= threshold && Math.abs(dy) <= restraint){
+      if(dx < 0){
+        // 往左滑：下一天
+        if(currentDayIndex < trip.days.length - 1){
+          currentDayIndex++;
+          updateDayListActive();
+          renderDay(currentDayIndex);
+        }
+      }else{
+        // 往右滑：前一天
+        if(currentDayIndex > 0){
+          currentDayIndex--;
+          updateDayListActive();
+          renderDay(currentDayIndex);
+        }
+      }
+    }
+  }, {passive:true});
+})();
   </script>
 </body>
 </html>
