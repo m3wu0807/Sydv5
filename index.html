@@ -684,7 +684,7 @@ overflow: visible;
         </button>
         <div class="top-bar-main">
           <div class="app-title">家碩&雨恬｜Sydney Diary</div>
-          <div class="subtitle">V3.5｜單檔版｜可自行切換日期頁面載入行程</div>
+          <div class="subtitle">V3.6｜單檔版｜可自行切換日期頁面載入行程</div>
           <div class="time-weather-row">
             <div class="time-block">
               <div class="icon-circle icon-clock"></div>
@@ -968,7 +968,7 @@ function formatDateLabel(dateStr){
     }
 
     /* ========= 匯率換算（自動更新＋失敗 fallback） ========= */
-    var fxRate = 20.00; // 預設先當 20
+    var fxRate = 20.80; // 預設先當 20.8
 
     function updateFxLabel(normal){
       var label = document.getElementById("fx-label");
@@ -1562,8 +1562,8 @@ dayHeaderEl.innerHTML =
   var startX=0, startY=0, dx=0, dy=0;
   var locked = "";           // "" | "h" | "v"
   var dragging = false;
-  var threshold = 70;        // 需要滑動多少才切換
-  var maxDrag = 110;         // 拖曳位移上限（手感比較像卡片）
+  var threshold = 55;        // 需要滑動多少才切換
+  var maxDrag = 140;         // 拖曳位移上限（手感比較像卡片）
 
   function setStage(x, opacity){
     if(!stage) return;
@@ -1579,24 +1579,34 @@ dayHeaderEl.innerHTML =
   }
 
   function animateOut(direction, onDone){
-    // direction: -1 下一天（往左） / +1 前一天（往右）
-    if(!stage) { onDone && onDone(); return; }
-    stage.classList.remove("dragging");
-    var outX = direction * (-160); // 往左切：畫面往左滑出（-160）；往右切：+160
-    stage.style.transition = "transform 160ms ease, opacity 160ms ease";
-    setStage(outX, 0.25);
-    setTimeout(function(){
-      onDone && onDone();
-      // 新內容進場：從反方向回來
-      stage.style.transition = "none";
-      setStage(-outX, 0.25);
-      // 下一個 frame 再回正，形成滑入
-      requestAnimationFrame(function(){
-        stage.style.transition = "transform 180ms ease, opacity 180ms ease";
-        setStage(0, 1);
-      });
-    }, 170);
-  }
+  // direction: -1 = 往左滑（下一天）/ +1 = 往右滑（前一天）
+  if(!stage) { onDone && onDone(); return; }
+
+  stage.classList.remove("dragging");
+
+  // 1) 先把「目前頁」往你滑的方向滑出去
+  var outX = (direction === -1) ? -220 : 220;
+  stage.style.transition = "transform 170ms ease, opacity 170ms ease";
+  setStage(outX, 0.2);
+
+  setTimeout(function(){
+    // 2) 換內容
+    onDone && onDone();
+
+    // 3) 新頁要從「相反方向」滑進來
+    //    往左滑下一天：新頁從右邊進來（+220）
+    //    往右滑前一天：新頁從左邊進來（-220）
+    var inStartX = (direction === -1) ? 220 : -220;
+
+    stage.style.transition = "none";
+    setStage(inStartX, 0.2);
+
+    requestAnimationFrame(function(){
+      stage.style.transition = "transform 200ms ease, opacity 200ms ease";
+      setStage(0, 1);
+    });
+  }, 180);
+}
 
   container.addEventListener("touchstart", function(e){
     if(!e.touches || e.touches.length !== 1) return;
