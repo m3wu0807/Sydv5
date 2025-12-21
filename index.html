@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --primary-color: #111827;
-      --secondary-color: #374151;
-      --accent-color: #2563eb;
+      --primary-color: #0B3A5B; 
+      --secondary-color: #365C73;
+      --accent-color: #1F77B4;
       --bg-color: #f5f5f7;
       --card-bg: #ffffff;
       --text-title: #111827;
@@ -226,35 +226,60 @@
       padding: 0;
     }
 
-/* 側邊欄：天數列表（3 欄固定對齊，不超出欄寬） */
-.day-list-item {
-  font-size: 11px;
-  padding: 4px 8px;
+/* 側邊欄：天數列表（更緊湊、3 欄固定對齊、不超出欄寬） */
+.day-list-item{
+  font-size: 11.5px;                  /* ✅ 字體放大（原本 10–11） */
+  padding: 6px 5px;                 /* 上下仍維持舒服 */
   border-radius: 999px;
   cursor: pointer;
+
   display: grid;
-  grid-template-columns: 60px 52px minmax(0, 1fr); /* 左：Day／出發日，中：日期，右：主題 */
+
+  /* Day | 日期 | 主題 */
+  grid-template-columns: 38px 80px minmax(0,1fr);
+  /*            ↑     ↑
+     Day→日期 ≈ 1 個全形字元
+     主題保留最大空間 */
+
   align-items: center;
-  column-gap: 4px;
+
+  column-gap: 2px;                  /* Day ↔ 日期 幾乎貼齊 */
+  line-height: 1.35;
   color: var(--text-body);
 }
 
+/* Day / 日期：固定一行 */
 .day-list-item .day-col1,
-.day-list-item .day-col2 {
-  white-space: nowrap;                /* Day / 日期 一律一行 */
+.day-list-item .day-col2{
+  white-space: nowrap;
 }
 
-.day-list-item .day-col3 {
+/* 主題：保留閱讀距離 + 不爆版 */
+.day-list-item .day-col3{
   min-width: 0;
-  white-space: nowrap;                /* 主題過長就 … */
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  padding-left: 10px;               /* ✅ 日期 ↔ 主題 保留原本距離 */
 }
 
-    .day-list-item.active {
-      background: var(--primary-color);
-      color: #fff;
-    }
+.day-list-item.active{
+  background: var(--primary-color);
+  color:#fff;
+}
+
+    
+/* ✅ 內容區寬度固定（每一頁三張白卡都一致） */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1;
+  width: 100%;
+  max-width: 760px;     /* ✅ 固定上限，避免某些頁看起來變窄 */
+}
 
     /* Cards (FX / Theme) */
     .card {
@@ -460,6 +485,13 @@
       margin-bottom: 4px;
     }
 
+    .day-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+}
+
     .day-subtitle {
       font-size: 13px;
       color: var(--text-subtitle);
@@ -613,8 +645,8 @@
           <span></span>
         </button>
         <div class="top-bar-main">
-          <div class="app-title">我的行程本｜Sydney Diary</div>
-          <div class="subtitle">V2.3｜單檔版｜已自動載入行程，不需輸入密碼</div>
+          <div class="app-title">家碩&雨恬｜Sydney Diary</div>
+          <div class="subtitle">V3.2｜單檔版｜可自行切換日期頁面載入行程</div>
           <div class="time-weather-row">
             <div class="time-block">
               <div class="icon-circle icon-clock"></div>
@@ -769,19 +801,19 @@
       if(hexInput) hexInput.value = theme.hex.toUpperCase();
     }
 
-    function defaultTheme(){
-      var r=17,g=24,b=39;
-      var secondaryRGB = mixWithWhite(r,g,b,0.25);
-      var accentRGB = mixWithWhite(r,g,b,0.15);
-      return {
-        primary: "rgb("+r+","+g+","+b+")",
-        secondary: "rgb("+secondaryRGB.r+","+secondaryRGB.g+","+secondaryRGB.b+")",
-        accent: "rgb("+accentRGB.r+","+accentRGB.g+","+accentRGB.b+")",
-        r:r,g:g,b:b,
-        hex:"#111827",
-        bg:"#f5f5f7"
-      };
-    }
+function defaultTheme(){
+  var r=11,g=58,b=91; // ✅ #0B3A5B 深海洋藍
+  var secondaryRGB = mixWithWhite(r,g,b,0.25);
+  var accentRGB = mixWithWhite(r,g,b,0.15);
+  return {
+    primary: "rgb("+r+","+g+","+b+")",
+    secondary: "rgb("+secondaryRGB.r+","+secondaryRGB.g+","+secondaryRGB.b+")",
+    accent: "rgb("+accentRGB.r+","+accentRGB.g+","+accentRGB.b+")",
+    r:r,g:g,b:b,
+    hex:"#0B3A5B",
+    bg:"#f5f5f7"
+  };
+}
 
     function computeThemeFromRGB(r,g,b){
       var secondaryRGB = mixWithWhite(r,g,b,0.25);
@@ -852,6 +884,19 @@
       }
     }
 
+
+function formatDateLabel(dateStr){
+  var d = new Date(dateStr);
+  if (isNaN(d)) return "";
+
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, "0");
+  var day = String(d.getDate()).padStart(2, "0");
+  var w = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()];
+
+  return y + "/" + m + "/" + day + "（" + w + "）";
+}
+    
     /* ========= 雪梨即時天氣（Open-Meteo） ========= */
     function fetchSydneyWeather(){
       var weatherMain = document.getElementById("weather-main");
@@ -897,42 +942,73 @@
       }
     }
 
-    function fetchFxRate(){
-      var label = document.getElementById("fx-label");
-      var tagline = document.getElementById("fx-tagline");
-      if(label) label.textContent = "匯率更新中…";
+function fetchFxRate(){
+  var label = document.getElementById("fx-label");
+  var tagline = document.getElementById("fx-tagline");
+  if(label) label.textContent = "匯率更新中…";
 
-      fetch("https://api.exchangerate.host/latest?base=AUD&symbols=TWD")
-        .then(function(res){ return res.json(); })
-        .then(function(data){
-          if(data && data.rates && data.rates.TWD){
-            fxRate = data.rates.TWD;
-            localStorage.setItem("sydDiaryFxRate", fxRate.toString());
-            updateFxLabel(true);
-            if(tagline){
-              tagline.textContent = "匯率已更新自網路，僅供參考。輸入任一欄，另一邊會自動幫你算。";
-            }
-          } else {
-            // 更新失敗：維持原本或改成 20
-            if(isNaN(fxRate) || fxRate <= 0){
-              fxRate = 20.0;
-            }
-            updateFxLabel(false);
-            if(tagline){
-              tagline.textContent = "匯率更新失敗，暫以 20.00 計算。仍可輸入金額換算。";
-            }
-          }
-        })
-        .catch(function(){
-          if(isNaN(fxRate) || fxRate <= 0){
-            fxRate = 20.0;
-          }
-          updateFxLabel(false);
-          if(tagline){
-            tagline.textContent = "匯率更新失敗，暫以 20.00 計算。仍可輸入金額換算。";
-          }
-        });
+  // ✅ 多來源備援：哪個你網路打得開就用哪個
+  var endpoints = [
+    // 1) jsDelivr CDN（通常最容易通）
+    {
+      name: "jsdelivr-currency",
+      url: "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/aud/twd.json",
+      parse: function(data){
+        // { "date": "...", "twd": 20.1234 }
+        return data && typeof data.twd === "number" ? data.twd : null;
+      }
+    },
+    // 2) open.er-api（免費免 key，常見可用）
+    {
+      name: "open-er-api",
+      url: "https://open.er-api.com/v6/latest/AUD",
+      parse: function(data){
+        // { rates: { TWD: 20.12, ... }, result: "success" }
+        return data && data.rates && typeof data.rates.TWD === "number" ? data.rates.TWD : null;
+      }
+    },
+    // 3) frankfurter（如果你那邊打得開也可）
+    {
+      name: "frankfurter",
+      url: "https://api.frankfurter.app/latest?from=AUD&to=TWD",
+      parse: function(data){
+        return data && data.rates && typeof data.rates.TWD === "number" ? data.rates.TWD : null;
+      }
     }
+  ];
+
+  var i = 0;
+
+  function tryNext(){
+    if(i >= endpoints.length){
+      // 全部失敗：維持原本或 fallback 20
+      if(isNaN(fxRate) || fxRate <= 0) fxRate = 20.0;
+      updateFxLabel(false);
+      if(tagline) tagline.textContent = "匯率更新失敗，暫以 20.00 計算。仍可輸入金額換算。";
+      return;
+    }
+
+    var ep = endpoints[i++];
+    fetch(ep.url, { cache: "no-store" })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        var rate = ep.parse(data);
+        if(typeof rate === "number" && rate > 0){
+          fxRate = rate;
+          localStorage.setItem("sydDiaryFxRate", fxRate.toString());
+          updateFxLabel(true);
+          if(tagline) tagline.textContent = "匯率已更新（自動備援來源），僅供參考。輸入任一欄，另一邊會自動幫你算。";
+        }else{
+          tryNext();
+        }
+      })
+      .catch(function(){
+        tryNext();
+      });
+  }
+
+  tryNext();
+}
 
     function initFx(){
       var audInput = document.getElementById("fx-aud");
@@ -982,271 +1058,275 @@
     }
 
     /* ========= 行程資料 ========= */
-    var trip = {
-      name: "雪梨跨年 10 日遊",
-      dateRange: "2025/12/23 – 2026/01/02",
-      days: [
-        {
-          id:"d0",
-          label:"出發日｜12/23",
-          theme:"晚班機出發",
-          date:"2025/12/23",
-          title:"出發日｜TPE → SYD",
-          subtitle:"晚班機飛往雪梨，在機上休息調時差",
-          stay:"機上過夜",
-          stayMap:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport",
-          highCal:false,
-          walk:3000,
-          schedule:[
-            {time:"20:30–22:30", title:"前往桃園機場・辦理登機", detail:"抵達機場辦理報到、托運行李，通關後準備登機。", map:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport"},
-            {time:"23:50", title:"23:50 TPE → SYD", detail:"上機後盡量睡覺，調整時差。", map:""}
-          ],
-          meals:{
-            breakfast:null,
-            lunch:null,
-            dinner:{name:"機場或機上餐", type:"輕食／飛機餐", note:"依班機時間彈性用餐。", reserve:false}
-          }
-        },
-        {
-          id:"d1",
-          label:"Day 1｜12/24",
-          theme:"抵達・北雪梨港灣",
-          date:"2025/12/24",
-          title:"Day 1｜抵達＆北雪梨散步",
-          subtitle:"抵達雪梨，入住 North Sydney，下午港灣散步",
-          stay:"Citadines Walker North Sydney",
-          stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
-          highCal:false,
-          walk:8000,
-          schedule:[
-            {time:"12:15–13:30", title:"抵達雪梨機場 SYD", detail:"下機後通關、領行李、過檢疫。", map:"https://www.google.com/maps/place/Sydney+Airport"},
-            {time:"13:30–15:00", title:"前往 Citadines Walker North Sydney", detail:"機場搭火車 T8 → Central → 轉 T1/T9 至 North Sydney，步行 5–8 分鐘到飯店。", map:"https://www.google.com/maps/search/North+Sydney+Station"},
-            {time:"15:30–17:30", title:"北雪梨港灣散步", detail:"步行到 Lavender Bay、Wendy’s Secret Garden，再到 Kirribilli、Bradfield Park 拍大橋＋歌劇院經典角度。", map:"https://www.google.com/maps/place/Wendy%27s+Secret+Garden"},
-            {time:"18:30", title:"晚餐", detail:"建議 Sails on Lavender Bay（海鮮＋牛排）或 The Botanist（小酒館）。", map:""},
-            {time:"21:00", title:"回飯店休息", detail:"洗澡、早點睡，調整時差。", map:""}
-          ],
-          meals:{
-            breakfast:null,
-            lunch:{name:"機上餐點", type:"飛機餐", note:"以墊肚子為主，下機後再好好吃。", reserve:false},
-            dinner:{name:"Sails on Lavender Bay 或 The Botanist", type:"海鮮／小酒館", note:"視體力與預約情況調整。", reserve:true}
-          }
-        },
-        {
-          id:"d2",
-          label:"Day 2｜12/25",
-          theme:"聖誕節散步線",
-          date:"2025/12/25",
-          title:"Day 2｜聖誕節・雪梨黃金散步線",
-          subtitle:"古蹟＋海灣散步，店家多休息，適合拍照",
-          stay:"Citadines Walker North Sydney",
-          stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
-          highCal:true,
-          walk:12000,
-          schedule:[
-            {time:"09:00–12:00", title:"City 文化散步", detail:"從 Wynyard / St James 出站，逛 Hyde Park、St Mary’s Cathedral，沿 Macquarie St 看 Queen’s Square、The Mint、Hyde Park Barracks、Il Porcellino、NSW Parliament、State Library of NSW。", map:"https://www.google.com/maps/place/Hyde+Park+Sydney"},
-            {time:"12:30–13:30", title:"午餐：The Rocks 一帶", detail:"推薦 The Fine Food Store（早午餐、咖啡、三明治）。", map:"https://www.google.com/maps/search/The+Fine+Food+Store+The+Rocks"},
-            {time:"13:30–16:30", title:"植物園＋觀景點", detail:"進 Royal Botanic Garden，走到 Mrs Macquarie’s Chair / Point，沿 Farm Cove 海邊步道走回歌劇院外圍拍照。", map:"https://www.google.com/maps/place/Mrs+Macquarie%27s+Chair"},
-            {time:"16:30–18:00", title:"Circular Quay / The Rocks 聖誕氣氛散步", detail:"港邊與老街散步、感受聖誕氛圍。", map:"https://www.google.com/maps/place/Circular+Quay"},
-            {time:"18:30–20:00", title:"晚餐：回 North Sydney 一帶", detail:"可再吃 The Botanist 或附近營業中的 pub。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"City 附近咖啡廳早餐", type:"早午餐・咖啡", note:"聖誕節營業店家較少，建議前一天稍微查好。", reserve:false},
-            lunch:{name:"The Fine Food Store", type:"早午餐・咖啡", note:"如擔心客滿可稍早到。", reserve:false},
-            dinner:{name:"The Botanist 或 North Sydney pub", type:"小酒館／酒吧餐點", note:"聖誕節營業時間可能較短，建議提前確認。", reserve:true}
-          }
-        },
-        {
-          id:"d3",
-          label:"Day 3｜12/26",
-          theme:"Boxing Day 購物",
-          date:"2025/12/26",
-          title:"Day 3｜Boxing Day 購物＋城市文化",
-          subtitle:"大採購日＋博物館",
-          stay:"Citadines Walker North Sydney",
-          stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
-          highCal:true,
-          walk:11000,
-          schedule:[
-            {time:"09:30–14:00", title:"Pitt St Mall & 百貨購物", detail:"搭火車到 Town Hall，逛 Pitt St Mall、Westfield、QVB，趁 Boxing Day 大採購。", map:"https://www.google.com/maps/place/Pitt+Street+Mall"},
-            {time:"12:00–13:00", title:"午餐：City", detail:"可選 Mamak（馬來西亞料理）或百貨美食街。", map:"https://www.google.com/maps/search/Mamak+Sydney"},
-            {time:"14:30–17:30", title:"Hyde Park & Australian Museum", detail:"回 Hyde Park，進 Australian Museum 看自然歷史與恐龍展。", map:"https://www.google.com/maps/place/Australian+Museum"},
-            {time:"18:30–20:00", title:"晚餐：Darling Square 一帶", detail:"多國料理集中，日式、韓式、漢堡等。", map:"https://www.google.com/maps/place/Darling+Square"}
-          ],
-          meals:{
-            breakfast:{name:"住宿附近簡單早餐", type:"輕食", note:"", reserve:false},
-            lunch:{name:"Mamak 或百貨美食街", type:"東南亞料理／美食街", note:"", reserve:false},
-            dinner:{name:"Darling Square 多國料理", type:"日式／韓式／西式皆可", note:"視人潮彈性排隊。", reserve:false}
-          }
-        },
-        {
-          id:"d4",
-          label:"Day 4｜12/27",
-          theme:"魚市場・遊船",
-          date:"2025/12/27",
-          title:"Day 4｜搬家・魚市場・達令港遊船晚餐",
-          subtitle:"北雪梨 → City，魚市場＋遊船晚餐",
-          stay:"Metro Hotel Marlow Sydney Central",
-          stayMap:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central",
-          highCal:true,
-          walk:9000,
-          schedule:[
-            {time:"09:30–10:30", title:"退房 → 搬到 Metro Hotel", detail:"從 Citadines 退房，搭火車或 Uber 前往 Central 附近的 Metro，先寄放行李。", map:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central"},
-            {time:"11:00–13:00", title:"Sydney Fish Market 午餐", detail:"吃生蠔、龍蝦、鮭魚握壽司、炸魚薯條。", map:"https://www.google.com/maps/place/Sydney+Fish+Market"},
-            {time:"14:00–17:00", title:"Darling Harbour & City Walk", detail:"在 Darling Harbour 一帶散步，逛 Pyrmont Bridge、Harbourside、King St Wharf。", map:"https://www.google.com/maps/place/Darling+Harbour"},
-            {time:"18:10–21:00", title:"雪梨港精緻晚餐遊船", detail:"於 SEA LIFE 水族館前碼頭登船，三道式晚餐＋港灣夜景。", map:"https://www.google.com/maps/place/SEA+LIFE+Sydney+Aquarium"},
-            {time:"21:30", title:"回飯店休息", detail:"結束後步行或搭車回 Metro。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"退房前簡單早餐", type:"輕食", note:"", reserve:false},
-            lunch:{name:"Sydney Fish Market 海鮮大餐", type:"海鮮", note:"人多時需排隊拿餐。", reserve:false},
-            dinner:{name:"達令港精緻遊船晚餐", type:"三道式晚餐", note:"已事先購買行程。", reserve:true}
-          }
-        },
-        {
-          id:"d5",
-          label:"Day 5｜12/28",
-          theme:"藍山一日遊",
-          date:"2025/12/28",
-          title:"Day 5｜藍山自由行",
-          subtitle:"藍山一日，Scenic World＋三姐妹岩",
-          stay:"Metro Hotel Marlow Sydney Central",
-          stayMap:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central",
-          highCal:false,
-          walk:13000,
-          schedule:[
-            {time:"07:30–09:30", title:"搭火車前往藍山", detail:"Central 搭 Blue Mountains Line 到 Katoomba。", map:"https://www.google.com/maps/place/Central+Station,+Sydney"},
-            {time:"10:00–12:30", title:"Scenic World 纜車三寶", detail:"Skyway、Railway、Cableway，俯瞰山谷。", map:"https://www.google.com/maps/place/Scenic+World+Katoomba"},
-            {time:"12:30–13:30", title:"午餐", detail:"Scenic World Café 或 Katoomba 小鎮（Station Bar / Yellow Deli）。", map:""},
-            {time:"13:30–16:00", title:"Echo Point & 步道", detail:"看三姐妹岩，依體力走 Prince Henry Cliff Walk。", map:"https://www.google.com/maps/place/Echo+Point+Lookout"},
-            {time:"16:30–18:30", title:"搭火車回 Central", detail:"回到市區，晚餐後回飯店。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"簡單早餐／外帶咖啡", type:"輕食", note:"可在 Central 附近買。", reserve:false},
-            lunch:{name:"Scenic World Café 或 Katoomba 餐廳", type:"西式餐點", note:"", reserve:false},
-            dinner:{name:"Central 一帶簡單晚餐", type:"隨意餐廳", note:"", reserve:false}
-          }
-        },
-        {
-          id:"d6",
-          label:"Day 6｜12/29",
-          theme:"獵人谷酒莊",
-          date:"2025/12/29",
-          title:"Day 6｜獵人谷酒莊一日遊（已訂）",
-          subtitle:"葡萄酒＋起司盤的一天",
-          stay:"Metro Hotel Marlow Sydney Central",
-          stayMap:"https://www.google.com/maps/search/Metro+Hotel+Marlow+Sydney+Central",
-          highCal:true,
-          walk:8000,
-          schedule:[
-            {time:"08:00–08:15", title:"走路至 St Laurence Church 集合", detail:"從飯店步行約 5 分鐘到 812 George St。", map:"https://www.google.com/maps/place/St+Laurence+Church+Sydney"},
-            {time:"08:20–17:30", title:"獵人谷一日遊行程", detail:"造訪 3–4 間酒莊，品酒、起司盤、巧克力店。", map:"https://www.google.com/maps/search/Hunter+Valley+Wineries"},
-            {time:"18:00–19:00", title:"回到 Central 附近", detail:"解散後回飯店或先吃晚餐。", map:""},
-            {time:"19:00", title:"晚餐", detail:"可選唐人街中餐或韓式烤肉。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"飯店附近簡單早餐", type:"輕食", note:"可外帶吃在車上。", reserve:false},
-            lunch:{name:"獵人谷行程內餐食／小點", type:"團體餐", note:"依旅行社安排。", reserve:true},
-            dinner:{name:"唐人街中餐或韓式烤肉", type:"中式／韓式", note:"視體力決定是否排隊。", reserve:false}
-          }
-        },
-        {
-          id:"d7",
-          label:"Day 7｜12/30",
-          theme:"動物園・Watsons Bay",
-          date:"2025/12/30",
-          title:"Day 7｜Taronga Zoo ＋ Watsons Bay ＋ 搬到 Rydges",
-          subtitle:"動物園＋海景散步，入住 Rydges Australia Square",
-          stay:"Rydges Australia Square（12/30–1/1）",
-          stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
-          highCal:false,
-          walk:11000,
-          schedule:[
-            {time:"08:30–09:30", title:"退房 → 行李帶去 Rydges 寄放", detail:"從 Metro 搬到 Rydges，不能入住就先寄放行李。", map:"https://www.google.com/maps/search/Rydges+Australia+Square"},
-            {time:"09:30–13:00", title:"Taronga Zoo 動物園", detail:"從 Circular Quay 搭渡輪到動物園，看無尾熊、袋鼠等。", map:"https://www.google.com/maps/place/Taronga+Zoo+Sydney"},
-            {time:"13:30–17:30", title:"Watsons Bay 海景＋步道", detail:"搭渡輪到 Watsons Bay，走 South Head Heritage Walk、Gap Bluff 看海景。", map:"https://www.google.com/maps/place/Watsons+Bay"},
-            {time:"17:30–19:00", title:"晚餐：Doyle’s on the Beach", detail:"經典海鮮，炸魚薯條、海鮮拼盤。", map:""},
-            {time:"19:00–20:00", title:"渡輪回 Circular Quay → 回 Rydges 辦理 Check-in", detail:"回 City 正式入住 Rydges。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"附近咖啡廳簡單早餐", type:"咖啡・早午餐", note:"", reserve:false},
-            lunch:{name:"動物園內餐廳或輕食", type:"園區餐點", note:"", reserve:false},
-            dinner:{name:"Doyle’s on the Beach", type:"海鮮餐廳", note:"建議提前預約海景位。", reserve:true}
-          }
-        },
-        {
-          id:"d8",
-          label:"Day 8｜12/31",
-          theme:"歌劇院・跨年",
-          date:"2025/12/31",
-          title:"Day 8｜跨年・歌劇院歌劇＋After Party",
-          subtitle:"白天市區漫步，晚上歌劇＋煙火",
-          stay:"Rydges Australia Square",
-          stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
-          highCal:true,
-          walk:9000,
-          schedule:[
-            {time:"10:30–14:00", title:"Barangaroo & Millers Point 散步", detail:"走 Barangaroo Reserve、Millers Point、Observatory Hill 看大橋。", map:"https://www.google.com/maps/place/Barangaroo+Reserve"},
-            {time:"12:30–13:30", title:"午餐", detail:"在 Barangaroo 或 City 餐廳用餐。", map:""},
-            {time:"14:00–16:30", title:"回飯店休息・準備跨年", detail:"洗澡、打扮、整理跨年用品。", map:""},
-            {time:"17:30–18:30", title:"歌劇院附近輕食", detail:"先吃點小東西，避免演出後太餓。", map:""},
-            {time:"19:00–22:00", title:"Sydney Opera House 歌劇演出（已訂）", detail:"依票券座位入場欣賞演出。", map:"https://www.google.com/maps/place/Sydney+Opera+House"},
-            {time:"22:00–00:30", title:"After Party + 跨年煙火", detail:"內含飲品、小點，午夜倒數看港灣煙火。", map:""},
-            {time:"00:30–01:00", title:"步行回 Rydges", detail:"步行 10–15 分鐘回飯店。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"飯店附近簡單早餐", type:"輕食", note:"", reserve:false},
-            lunch:{name:"Barangaroo / City 餐廳", type:"現代澳式／日式／泰式", note:"", reserve:false},
-            dinner:{name:"歌劇院前輕食＋After Party 點心", type:"輕食＋派對餐點", note:"依票券內容為主。", reserve:true}
-          }
-        },
-        {
-          id:"d9",
-          label:"Day 9｜1/1",
-          theme:"最後散步・回程",
-          date:"2026/01/01",
-          title:"Day 9｜最後半天＆回程",
-          subtitle:"跨年後睡飽、最後散步，晚上飛回台灣",
-          stay:"Rydges Australia Square（早上退房）",
-          stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
-          highCal:false,
-          walk:8000,
-          schedule:[
-            {time:"09:30–11:00", title:"睡到自然醒・早餐", detail:"在飯店附近輕鬆吃早餐。", map:""},
-            {time:"11:00–11:30", title:"退房・寄放行李", detail:"11:00 前退房並寄放行李。", map:""},
-            {time:"11:30–15:00", title:"最後散步＋Brunch", detail:"City 補貨或去 Newtown / Redfern 早午餐＋逛小店。", map:"https://www.google.com/maps/search/Three+Williams+Sydney"},
-            {time:"15:30–16:00", title:"回飯店拿行李", detail:"回 Rydges 領回行李。", map:""},
-            {time:"16:00–18:00", title:"前往機場", detail:"搭火車 Airport Link 或機場巴士到 SYD。", map:"https://www.google.com/maps/place/Sydney+Airport"},
-            {time:"20:00", title:"20:00 SYD → TPE", detail:"辦理登機、搭機回台灣。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"飯店附近早餐／咖啡廳", type:"輕食", note:"", reserve:false},
-            lunch:{name:"City 或 Newtown / Redfern 早午餐", type:"早午餐", note:"", reserve:false},
-            dinner:{name:"機場／機上餐點", type:"機場餐／飛機餐", note:"", reserve:false}
-          }
-        },
-        {
-          id:"d10",
-          label:"回家日｜1/2",
-          theme:"抵達台灣",
-          date:"2026/01/02",
-          title:"回家日｜抵達台灣",
-          subtitle:"清晨抵達台灣，回家休息",
-          stay:"甜甜的家",
-          stayMap:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport",
-          highCal:false,
-          walk:4000,
-          schedule:[
-            {time:"05:50–08:00", title:"抵達桃園機場・入境", detail:"領行李、通關、搭車回家。", map:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport"},
-            {time:"08:00 之後", title:"回家整理行李・好好休息", detail:"洗澡、洗衣服、整理戰利品。", map:""}
-          ],
-          meals:{
-            breakfast:{name:"機上簡單早餐或回家後再吃", type:"輕食", note:"", reserve:false},
-            lunch:{name:"家附近或外送", type:"隨意", note:"", reserve:false},
-            dinner:{name:"家常晚餐", type:"在家煮／外帶", note:"", reserve:false}
-          }
-        }
-      ]
-    };
+var trip = {
+  name: "雪梨跨年 10 日遊",
+  dateRange: "2025/12/23 – 2026/01/02",
+  days: [
+    {
+      id:"d0",
+      label:"出發日｜12/23（Tue）",
+      theme:"晚班機出發",
+      date:"2025/12/23",
+      title:"出發日｜TPE → SYD",
+      subtitle:"晚班機飛往雪梨，機上休息調時差",
+      stay:"機上過夜",
+      stayMap:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport",
+      highCal:false,
+      walk:3000,
+      schedule:[
+        {time:"20:30–22:30", title:"前往桃園機場・辦理登機", detail:"報到、托運行李、通關，登機前補水。", map:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport"},
+        {time:"23:50", title:"23:50 TPE → SYD", detail:"上機後優先睡覺，調時差。", map:""}
+      ],
+      meals:{ breakfast:null, lunch:null, dinner:{name:"機場／機上餐", type:"輕食／飛機餐", note:"依班機供餐為主。", reserve:false} }
+    },
+
+    {
+      id:"d1",
+      label:"Day 1｜12/24（Wed）",
+      theme:"抵達・聖誕前夕",
+      date:"2025/12/24",
+      title:"Day 1｜抵達雪梨・聖誕前夕",
+      subtitle:"North Sydney 放行李 → 港灣散步 → Anita Dining",
+      stay:"Citadines Walker North Sydney",
+      stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
+      highCal:true,
+      walk:9000,
+      schedule:[
+        {time:"12:15–13:30", title:"抵達雪梨機場 SYD", detail:"通關、領行李、檢疫。", map:"https://www.google.com/maps/place/Sydney+Airport"},
+        {time:"13:30–15:00", title:"前往 North Sydney（寄放／入住）", detail:"Airport Link → Central 轉乘 → North Sydney，步行到飯店。", map:"https://www.google.com/maps/search/North+Sydney+Station"},
+        {time:"15:20–16:30", title:"Lavender Bay", detail:"港灣散步拍照、放鬆。", map:"https://www.google.com/maps/place/Lavender+Bay"},
+        {time:"16:45–17:45", title:"Luna Park 月神公園", detail:"拍照走走，不必玩設施也很有氣氛。", map:"https://www.google.com/maps/place/Luna+Park+Sydney"},
+        {time:"19:00–21:00", title:"聖誕夜晚餐：Anita Dining（已訂）", detail:"建議提早 10–15 分鐘到。", map:""}
+      ],
+      meals:{
+        breakfast:null,
+        lunch:{name:"下機後簡單午餐", type:"輕食", note:"在 Central / North Sydney 先墊胃。", reserve:false},
+        dinner:{name:"Anita Dining", type:"西式料理", note:"聖誕前夕已訂。", reserve:true}
+      }
+    },
+
+    {
+      id:"d2",
+      label:"Day 2｜12/25（Thu）",
+      theme:"聖誕節慢走",
+      date:"2025/12/25",
+      title:"Day 2｜聖誕節・市區慢走",
+      subtitle:"Hyde Park → 教堂 → 植物園 → The Rocks 夜色",
+      stay:"Citadines Walker North Sydney",
+      stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
+      highCal:false,
+      walk:11000,
+      schedule:[
+        {time:"09:30–11:30", title:"Hyde Park・St Mary’s Cathedral", detail:"聖誕節很多店休，走古蹟線最適合。", map:"https://www.google.com/maps/place/St+Mary%27s+Cathedral+Sydney"},
+        {time:"12:00–13:00", title:"市區簡單午餐", detail:"聖誕節營業時間短，看到開的就先吃。", map:""},
+        {time:"13:30–16:30", title:"Royal Botanic Gardens・Mrs Macquarie’s Chair", detail:"港灣經典拍照點。", map:"https://www.google.com/maps/place/Mrs+Macquarie%27s+Chair"},
+        {time:"17:00–18:30", title:"The Rocks 聖誕市集／市區散步", detail:"有開就逛，沒有就當夜景散步。", map:"https://www.google.com/maps/place/The+Rocks+Sydney"},
+        {time:"19:30", title:"早點休息", detail:"隔天開始正常節奏。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"住宿附近咖啡＋麵包", type:"輕食", note:"", reserve:false},
+        lunch:{name:"市區簡單午餐", type:"隨機應變", note:"聖誕節以「有開就吃」為優先。", reserve:false},
+        dinner:{name:"North Sydney 附近簡單晚餐", type:"隨意", note:"不要太晚，店家可能提早打烊。", reserve:false}
+      }
+    },
+
+    {
+      id:"d3",
+      label:"Day 3｜12/26（Fri）",
+      theme:"Surry Hills・雪梨塔",
+      date:"2025/12/26",
+      title:"Day 3｜Surry Hills＋市區經典",
+      subtitle:"設計小店＋QVB＋Sydney Tower Eye（傍晚）",
+      stay:"Citadines Walker North Sydney",
+      stayMap:"https://www.google.com/maps/search/Citadines+Walker+North+Sydney",
+      highCal:true,
+      walk:12000,
+      schedule:[
+        {time:"09:30–11:30", title:"Surry Hills 散步", detail:"咖啡店、設計小店、街區氛圍。", map:"https://www.google.com/maps/place/Surry+Hills"},
+        {time:"12:00–13:00", title:"Surry Hills 午餐", detail:"找評分高的 Brunch 店。", map:""},
+        {time:"13:30–15:30", title:"QVB・Town Hall 周邊", detail:"經典建築＋市中心逛街。", map:"https://www.google.com/maps/place/Queen+Victoria+Building"},
+        {time:"16:30–18:00", title:"Sydney Tower Eye（傍晚）", detail:"傍晚視野最好。", map:"https://www.google.com/maps/place/Sydney+Tower+Eye"},
+        {time:"19:00", title:"晚餐：市區／Chinatown", detail:"晚餐自由選，吃完回 North Sydney。", map:"https://www.google.com/maps/place/Chinatown+Sydney"}
+      ],
+      meals:{
+        breakfast:{name:"咖啡＋輕食", type:"輕食", note:"", reserve:false},
+        lunch:{name:"Surry Hills 午餐", type:"早午餐", note:"熱門店可提早到。", reserve:false},
+        dinner:{name:"Chinatown／市區晚餐", type:"中式／亞洲料理", note:"", reserve:false}
+      }
+    },
+
+    {
+      id:"d4",
+      label:"Day 4｜12/27（Sat）",
+      theme:"魚市・水族館・遊船",
+      date:"2025/12/27",
+      title:"Day 4｜魚市場＋水族館＋遊船晚餐",
+      subtitle:"搬到 CBD：先海鮮、再水族館、晚上遊船",
+      stay:"Hotel Coronation Sydney（CBD）",
+      stayMap:"https://www.google.com/maps/search/Hotel+Coronation+Sydney",
+      highCal:true,
+      walk:9000,
+      schedule:[
+        {time:"09:30–10:30", title:"退房 → 搬到 Coronation（寄放/入住）", detail:"先到 CBD 放行李，輕裝出發。", map:"https://www.google.com/maps/search/Hotel+Coronation+Sydney"},
+        {time:"11:30–13:00", title:"Sydney Fish Market 午餐", detail:"海鮮拼盤、生蠔、炸魚薯條。", map:"https://www.google.com/maps/place/Sydney+Fish+Market"},
+        {time:"13:30–16:30", title:"Darling Harbour 散步", detail:"港邊慢走＋拍照。", map:"https://www.google.com/maps/place/Darling+Harbour"},
+        {time:"16:30–17:40", title:"SEA LIFE Sydney Aquarium（水族館）", detail:"晚餐前剛剛好。", map:"https://www.google.com/maps/place/SEA+LIFE+Sydney+Aquarium"},
+        {time:"18:10–21:00", title:"雪梨港晚餐遊船（已訂）", detail:"依票券指示登船；建議提早到碼頭。", map:"https://www.google.com/maps/search/King+Street+Wharf"},
+        {time:"21:20", title:"回飯店休息", detail:"散場後回 CBD 飯店。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"搬家前簡單早餐", type:"輕食", note:"", reserve:false},
+        lunch:{name:"Sydney Fish Market", type:"海鮮", note:"尖峰可能排隊。", reserve:false},
+        dinner:{name:"港灣晚餐遊船", type:"三道式晚餐", note:"已訂。", reserve:true}
+      }
+    },
+
+    {
+      id:"d5",
+      label:"Day 5｜12/28（Sun）",
+      theme:"藍山一日遊",
+      date:"2025/12/28",
+      title:"Day 5｜藍山國家公園（自由行）",
+      subtitle:"Katoomba・Scenic World・Three Sisters",
+      stay:"Hotel Coronation Sydney（CBD）",
+      stayMap:"https://www.google.com/maps/search/Hotel+Coronation+Sydney",
+      highCal:false,
+      walk:13000,
+      schedule:[
+        {time:"07:30–09:30", title:"Central → Katoomba（火車）", detail:"刷 Opal 或買票；早出發更從容。", map:"https://www.google.com/maps/place/Central+Station,+Sydney"},
+        {time:"10:00–12:30", title:"Scenic World", detail:"Skyway / Railway / Cableway（纜車三寶）。", map:"https://www.google.com/maps/place/Scenic+World"},
+        {time:"12:30–13:30", title:"午餐：Katoomba 小鎮", detail:"隨機挑評分好的店即可。", map:"https://www.google.com/maps/place/Katoomba"},
+        {time:"13:45–16:00", title:"Three Sisters・Echo Point", detail:"看三姐妹岩＋附近步道。", map:"https://www.google.com/maps/place/Echo+Point+Lookout"},
+        {time:"16:30–18:30", title:"返回雪梨市區", detail:"回到 CBD 休息、簡單晚餐。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"外帶早餐/咖啡", type:"輕食", note:"火車上吃。", reserve:false},
+        lunch:{name:"Katoomba 午餐", type:"西式／咖啡廳", note:"", reserve:false},
+        dinner:{name:"CBD 簡單晚餐", type:"隨意", note:"走累就早點回飯店。", reserve:false}
+      }
+    },
+
+    {
+      id:"d6",
+      label:"Day 6｜12/29（Mon）",
+      theme:"獵人谷品酒",
+      date:"2025/12/29",
+      title:"Day 6｜獵人谷品酒一日團（已訂）",
+      subtitle:"酒莊＋起司＋巧克力",
+      stay:"Hotel Coronation Sydney（CBD）",
+      stayMap:"https://www.google.com/maps/search/Hotel+Coronation+Sydney",
+      highCal:true,
+      walk:7000,
+      schedule:[
+        {time:"07:50–08:10", title:"前往集合點", detail:"St Laurence Church（812 George St）。", map:"https://www.google.com/maps/place/St+Laurence+Church"},
+        {time:"08:20–17:30", title:"獵人谷一日團", detail:"酒莊品酒、起司盤、巧克力店。", map:"https://www.google.com/maps/search/Hunter+Valley"},
+        {time:"18:00–19:30", title:"返回市區・晚餐自由", detail:"不建議太晚，回飯店休息。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"簡單早餐", type:"輕食", note:"可外帶。", reserve:false},
+        lunch:{name:"團內餐食/小點", type:"依行程", note:"", reserve:true},
+        dinner:{name:"市區自由晚餐", type:"隨意", note:"", reserve:false}
+      }
+    },
+
+    {
+      id:"d7",
+      label:"Day 7｜12/30（Tue）",
+      theme:"塔龍加動物園",
+      date:"2025/12/30",
+      title:"Day 7｜Taronga Zoo 動物園",
+      subtitle:"上午動物園，下午回市區，入住 Rydges",
+      stay:"Rydges Australia Square",
+      stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
+      highCal:false,
+      walk:11000,
+      schedule:[
+        {time:"08:30–09:10", title:"退房 Coronation → Rydges 寄放行李", detail:"先把行李移到 Rydges（通常可寄放）。", map:"https://www.google.com/maps/search/Rydges+Australia+Square"},
+        {time:"09:30–13:00", title:"Taronga Zoo", detail:"Circular Quay 搭渡輪 → 入園；看無尾熊、海獅秀。", map:"https://www.google.com/maps/place/Taronga+Zoo+Sydney"},
+        {time:"13:30–15:00", title:"回市區休息", detail:"渡輪回 Circular Quay，找咖啡廳坐一下。", map:"https://www.google.com/maps/place/Circular+Quay"},
+        {time:"15:30–16:30", title:"辦理入住 Rydges", detail:"Check-in、整理跨年兩天用品。", map:""},
+        {time:"晚上", title:"輕鬆晚餐/整理行李", detail:"跨年前一天，保持體力。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"咖啡＋麵包", type:"輕食", note:"", reserve:false},
+        lunch:{name:"動物園內簡餐", type:"園區餐點", note:"", reserve:false},
+        dinner:{name:"CBD 輕鬆晚餐", type:"隨意", note:"不要太油太撐。", reserve:false}
+      }
+    },
+
+    {
+      id:"d8",
+      label:"Day 8｜12/31（Wed）",
+      theme:"跨年・歌劇院",
+      date:"2025/12/31",
+      title:"Day 8｜跨年日・歌劇院＋跨年夜",
+      subtitle:"上午輕鬆活動，晚間歌劇＋After Party＋煙火",
+      stay:"Rydges Australia Square",
+      stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
+      highCal:true,
+      walk:9000,
+      schedule:[
+        {time:"上午", title:"市區輕鬆活動", detail:"可選：Newtown／書店／咖啡廳（避免耗體力）。", map:"https://www.google.com/maps/place/Newtown"},
+        {time:"下午", title:"回飯店休息・換裝", detail:"跨年人潮大，提早整理好。", map:""},
+        {time:"傍晚", title:"提早吃點東西", detail:"避免演出後太餓、也避免太晚找不到吃的。", map:""},
+        {time:"19:45–22:00", title:"雪梨歌劇院跨年歌劇（已訂）", detail:"提早到場安檢。", map:"https://www.google.com/maps/place/Sydney+Opera+House"},
+        {time:"22:00–00:30", title:"After Party＋跨年煙火", detail:"倒數看港灣煙火。", map:""},
+        {time:"00:30–01:10", title:"回飯店", detail:"走路回 Rydges，避開擁擠交通。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"飯店附近早餐", type:"輕食", note:"", reserve:false},
+        lunch:{name:"市區簡單午餐", type:"隨意", note:"", reserve:false},
+        dinner:{name:"輕食＋After Party 點心", type:"輕食/派對餐點", note:"依票券內容", reserve:true}
+      }
+    },
+
+    {
+      id:"d9",
+      label:"Day 9｜1/1（Thu）",
+      theme:"回程日",
+      date:"2026/01/01",
+      title:"Day 9｜回程",
+      subtitle:"退房後市區簡單走走 → 前往機場",
+      stay:"Rydges Australia Square（退房）",
+      stayMap:"https://www.google.com/maps/search/Rydges+Australia+Square",
+      highCal:false,
+      walk:6000,
+      schedule:[
+        {time:"上午", title:"退房", detail:"寄放行李或直接帶走（依當天安排）。", map:""},
+        {time:"上午–中午", title:"市區簡單散步／早餐", detail:"補買伴手禮、喝咖啡。", map:""},
+        {time:"下午", title:"前往機場", detail:"Airport Link 或機場巴士。", map:"https://www.google.com/maps/place/Sydney+Airport"},
+        {time:"20:00", title:"20:00 起飛返台（經布里斯本轉機）", detail:"依航班資訊辦理登機。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"City 早餐/咖啡", type:"輕食", note:"", reserve:false},
+        lunch:{name:"市區簡單午餐", type:"隨意", note:"", reserve:false},
+        dinner:{name:"機場/機上餐", type:"機場餐/飛機餐", note:"", reserve:false}
+      }
+    },
+
+    {
+      id:"d10",
+      label:"回家日｜1/2（Fri）",
+      theme:"抵達台灣",
+      date:"2026/01/02",
+      title:"回家日｜抵達台灣",
+      subtitle:"清晨抵台，回家休息",
+      stay:"甜甜的家",
+      stayMap:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport",
+      highCal:false,
+      walk:4000,
+      schedule:[
+        {time:"05:50–08:00", title:"抵達桃園機場・入境", detail:"領行李、通關、搭車回家。", map:"https://www.google.com/maps/place/Taiwan+Taoyuan+International+Airport"},
+        {time:"08:00 之後", title:"回家整理行李・好好休息", detail:"洗澡、洗衣服、整理戰利品。", map:""}
+      ],
+      meals:{
+        breakfast:{name:"機上簡單早餐或回家再吃", type:"輕食", note:"", reserve:false},
+        lunch:{name:"家附近或外送", type:"隨意", note:"", reserve:false},
+        dinner:{name:"家常晚餐", type:"在家/外帶", note:"", reserve:false}
+      }
+    }
+  ]
+};
 
     /* ========= 渲染 ========= */
     var dayListEl   = document.getElementById("day-list");
@@ -1296,7 +1376,7 @@ li.innerHTML =
     function renderDay(index){
       var d = trip.days[index];
 
-      // Header
+            // Header
       var bannerHTML = '';
       bannerHTML += '<div class="day-banner">';
       bannerHTML +=   '<div>';
@@ -1318,10 +1398,11 @@ li.innerHTML =
 
       dayHeaderEl.innerHTML =
         bannerHTML +
-        '<div class="day-title">'+ d.title +'</div>'+
-        '<div class="day-subtitle">'+ d.subtitle +'</div>'+
+        '<div class="day-date">📅 ' + formatDateLabel(d.date) + '</div>' +
+        '<div class="day-title">'+ d.title +'</div>' +
+        '<div class="day-subtitle">'+ d.subtitle +'</div>' +
         '<div class="badge-row">'+ badges +'</div>';
-
+      
       // Schedule
       dayScheduleEl.innerHTML = '<div class="section-title">📋 行程時間軸</div>';
       for(var i=0;i<d.schedule.length;i++){
