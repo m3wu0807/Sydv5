@@ -1452,9 +1452,20 @@ dayHeaderEl.innerHTML =
         var row = document.createElement("div");
         row.className = "schedule-row";
         var mapHtml = '';
-        if(b.map){
-          mapHtml = '<a href="'+b.map+'" target="_blank" rel="noopener noreferrer"><span class="icon-map"></span> 地圖</a>';
-        }
+if(b.map && String(b.map).trim() !== ''){
+  var raw = String(b.map).trim();
+
+  // 如果已經是完整網址，就直接用
+  var url = raw;
+
+  // 如果不是網址（例如：SEA LIFE Sydney Aquarium / Watsons Bay / 812 George St）
+  // 就自動包成 Google Maps 搜尋連結
+  if(!/^https?:\/\//i.test(raw)){
+    url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(raw);
+  }
+
+  mapHtml = '<a href="'+ url +'" target="_blank" rel="noopener noreferrer"><span class="icon-map"></span> 地圖</a>';
+}
         row.innerHTML =
           '<div class="time-cell">'+ b.time +'</div>'+
           '<div>'+
